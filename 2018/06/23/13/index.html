@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>神经网络：学习 | Mira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="成本函数首先,让我们来定义一些需要使用的变量:  L =网络中的层数 $s_l$ =第l层中的单元数量（不包括偏差单元） K =输出单元/类的数量">
+<meta name="keywords" content="机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="神经网络：学习">
+<meta property="og:url" content="http://yoursite.com/2018/06/23/13/index.html">
+<meta property="og:site_name" content="Mira">
+<meta property="og:description" content="成本函数首先,让我们来定义一些需要使用的变量:  L =网络中的层数 $s_l$ =第l层中的单元数量（不包括偏差单元） K =输出单元/类的数量">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-14T08:38:32.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="神经网络：学习">
+<meta name="twitter:description" content="成本函数首先,让我们来定义一些需要使用的变量:  L =网络中的层数 $s_l$ =第l层中的单元数量（不包括偏差单元） K =输出单元/类的数量">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.jpg" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-119579515-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?a146794f92eb69b46e02344e7af0b4ec";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Mira</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar3.jpg" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar3.jpg" />
+            <h2 id="name">Mira</h2>
+            <h3 id="title">1194798584@qq.com</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Guangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/MiraaChan">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                2
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/MiraaChan" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="instagram" class=tooltip>
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-神经网络：学习" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            神经网络：学习
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/06/23/13/">
+            <time datetime="2018-06-23T08:02:33.000Z" itemprop="datePublished">2018-06-23</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/机器学习/">机器学习</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h4 id="成本函数"><a href="#成本函数" class="headerlink" title="成本函数"></a>成本函数</h4><p><strong>首先,让我们来定义一些需要使用的变量:</strong></p>
+<ul>
+<li>L =网络中的层数</li>
+<li>$s_l$ =第l层中的单元数量（不包括偏差单元）</li>
+<li>K =输出单元/类的数量<a id="more"></a>
+</li>
+</ul>
+<p>回顾上一篇文章，我们知道神经网络中可能有很多的输出节点。<br>我们用$ h_\Theta(x)_k$来表示假设函数输出第k个结果。</p>
+<p>神经网络的成本函数将会是逻辑回归中成本函数的一个推广。</p>
+<p><strong>回想一下正则化逻辑回归的成本函数是：</strong><br>$J(θ)=−\frac{1}{m}\sum_{i=1}^m[y^{(i)}log(h_θ(x^{(i)}))+(1−y^{(i)})log(1−h_θ(x^{(i)}))]+ \frac{λ}{2m}\sum_{j=1}^nθ_j^2$</p>
+<p><strong>对于神经网络来说，它会稍微复杂一些：</strong><br>$J(θ)=−\frac{1}{m}\sum_{i=1}^m\sum_{k=1}^K[y^{(i)}_klog((h_θ(x^{(i)}))_k)+(1−y^{(i)}_k)log(1−(h_θ(x^{(i)}))_k)]$<br>$+\frac{λ}{2m}\sum_{l=1}^{L-1}\sum_{i=1}^{s_l}\sum_{j=1}^{s_{l+1}}(θ_{j,i}^{(l)})^2$</p>
+<p><strong>我们添加了几个嵌套总和来表示我们的多个输出节点</strong></p>
+<ul>
+<li>在方程的第一部分，我们有一个额外的嵌套总和，它根据节点的数量循环输出。</li>
+<li>在正则化部分，我们必须考虑多个$θ$矩阵（与之前的逻辑回归一样，我们对$θ$矩阵的每一项进行平方处理）。当前层的$θ$矩阵中的列数等于当前层中的节点数（包括偏差单元）。而行数则等于下一层中的节点数（不包括偏差单元）。</li>
+</ul>
+<p><strong>注意：</strong></p>
+<ul>
+<li>双重嵌套总和只是将<strong>输出层</strong>中每个单元计算的逻辑回归成本加起来;</li>
+<li>和是将整个网络中所有$Θ$的平方相加。</li>
+<li>三重嵌套总和中的i并不是指提到第i个训练例子</li>
+</ul>
+<h4 id="反向传播算法"><a href="#反向传播算法" class="headerlink" title="反向传播算法"></a>反向传播算法</h4><p><strong>“反向传播”是神经网络中的术语，用于最小化我们的成本函数，就像我们在逻辑回归和线性回归中使用梯度下降的目的是一样的。</strong></p>
+<p>显然，我们的目标是：$\min_Θ J(Θ)$<br>也就是说，我们希望使用最优的一组参数$\theta$，以此来最小化我们的成本函数。</p>
+<p><strong>让我们来看看用来计算$J(\theta)$的偏导数方程：</strong><br>$\frac{∂}{∂Θ^{(l)}_{i,j}}J(Θ)$</p>
+<p><strong>在反向传播中，我们将计算每一个节点：</strong><br>$\delta^{(l)}_j$=l层第j个节点的“误差”</p>
+<p><strong>回顾，$\alpha^{(l)}_j$表示l层第j个激活节点。</strong></p>
+<p><strong>对于最后一层，我们可以计算出误差向量：</strong><br>$\delta^{(L)}=a^{(L)}-y$<br>其中，L是总共的层数，$a^{(L)}$是最后一层的激活单元的输出向量。<br>所以，最后一层的“误差值”仅仅是我们在最后一层的实际结果和y的正确输出的差异。</p>
+<p><strong>要得到最后一层之前的层的$\delta$值，我们可以使用一个方程式，让我们从右到左移进：</strong></p>
+<p>$\delta^{(l)} = ((\Theta^{(l)})^T \delta^{(l+1)})\ .*\ g’(z^{(l)})$</p>
+<h4 id="其中，-delta-l-推导过程如下"><a href="#其中，-delta-l-推导过程如下" class="headerlink" title="其中， $\delta^{(l)}$推导过程如下"></a>其中， $\delta^{(l)}$推导过程如下</h4><p>$\delta^{(l)}=\frac{∂J(\theta)}{∂(z^{(l)})}=\frac{∂J(\theta)}{∂(z^{(l+1)})}.\frac{∂(z^{(l+1)})}{∂(a^{(l)})}.\frac{∂(a^{(l)})}{∂(z^{(l)})}$<br>$=\delta^{(l+1)}.\frac{∂(Θ^{(l)}a^{(l)})}{∂(a^{(l)})}.\ g’(z^{(l)})$<br>$=\delta^{(l+1)}.\Theta^{(l)}.\ g’(z^{(l)})$</p>
+<p><strong>故：</strong>$\delta^{(l)} = (\Theta^{(l)})^T \delta^{(l+1)}) .* g’(z^{(l)})$</p>
+<p>其中，$g’(u)=g(u).*(1-g(u))$</p>
+<p><strong>总的来说，中间节点上的反向传播可以这样表示：</strong><br>$\delta^{(l)} = (\Theta^{(l)})^T \delta^{(l+1)}) .* a^{(l)}.*(1-a^{(l)})$</p>
+<p><strong>接下来，让我们来计算权重的梯度，即求$\frac{∂}{∂Θ^{(l)}_{i,j}}J(Θ)$</strong></p>
+<p><strong>推导过程</strong><br>$\frac{∂}{∂Θ^{(l)}_{i,j}}J(Θ)=\frac{∂J(Θ)}{∂z^{(l+1)}_{i}}.\frac{∂∂z^{(l+1)}_{i}}{∂Θ^{(l)}_{i,j}}=\delta^{(l+1)}_i.\frac{∂(Θ^{(l)}a^{(l)})}{∂(Θ^{(l)})}=\delta^{(l+1)}_i.a^{(l)}$</p>
+<p>$=\frac{1}{m}\sum_{t=1}^ma^{(t)(l)}.\delta^{(l+1)}_i$</p>
+<p>显然，这里我们忽略了正则化,等下我们再来处理这个问题。</p>
+<p><strong>现在，让我们把所有公式整合在一起：</strong></p>
+<p>给出训练集${(x^{(1)},y^{(1)})⋯(x^{(m)} ,y^{(m)})}$</p>
+<ul>
+<li>初始化设置$Δ_{i,j}^{(l)}:= 0 对于所有的(l,i,j)$<br><strong>for t=1到m 的训练样本：</strong><blockquote>
+<ul>
+<li>设置$a^{(1)}:=x^{(t)}$</li>
+<li>使用正向传播算法计算每一层的$a^{(l)}$for l=2,3,…,L</li>
+<li>利用$y^{(t)}$,计算$δ^{(L)}=a^{(L)}−y^{(t)}$</li>
+<li>利用公式$\delta^{(l)} = (\Theta^{(l)})^T \delta^{(l+1)}) .* a^{(l)}.*(1-a^{(l)})$计算$δ^{(L−1)},δ^{(L−2)},…,δ^{(2)}$</li>
+<li>$Δ_{i,j}^{(l)}:=Δ_{i,j}^{(l)}+a_j^{(l)}δ_i^{(l+1)}$，或者向量化形式$Δ^{(l)}:=Δ^{(l)}+δ^{(l+1)}(a^{(l)})^T$</li>
+</ul>
+</blockquote>
+</li>
+<li>$D_{i,j}^{(l)}:=\frac{1}{m}(Δ_{i,j}^{(l)} +λΘ_{i,j}^{(l)})$,如果 j≠0 </li>
+<li>$D_{i,j}^{(l)}:=\frac{1}{m}Δ_{i,j}^{(l)}$,如果 j=0</li>
+</ul>
+<h4 id="总体整理一下神经网络模型"><a href="#总体整理一下神经网络模型" class="headerlink" title="总体整理一下神经网络模型"></a>总体整理一下神经网络模型</h4><p>首先，选择一个网络架构，选择神经网络的布局，包括每层中单元数以及总的层数。</p>
+<ul>
+<li>输入单元的数量 = $x^{(i)}$维数</li>
+<li>输出单元的数量 = 输出的类别数</li>
+<li>每一层中隐式单元的个数 = 通常情况下越多越好（当然也需要平衡随着单元数增加而产生的计算量）</li>
+<li>默认：一个隐层。如果多于一个隐层，那么内一个隐层的单元数是相同的。</li>
+</ul>
+<p><strong>神经网络训练流程</strong></p>
+<ol>
+<li>随机初始化权重（切不可全都为0）</li>
+<li>实现前向传播得到$h_\theta(x^{(i)})$</li>
+<li>实现成本函数</li>
+<li>实现反向传播计算偏导数$\frac{∂J(Θ)}{∂Θ^{(l)}_{i,j}}$</li>
+<li>使用梯度检测确认4中的反向传播算法是否有效，若有效则禁用此检测。（梯度检测十分耗时）</li>
+<li>使用梯度下降或者内置优化函数来调整$\theta$的权重，以最小化成本函数。</li>
+</ol>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2018/06/23/13/" data-id="cjopvwlnx001imcvd9b9nbk01" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/07/30/14/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    softmax函数
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2018/06/13/12/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">初识神经网络</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/11/20/20/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/11/20/20/" class="title">python multiprocessing 中imap和map的不同</a></p>
+                            <p class="item-date"><time datetime="2018-11-20T12:42:04.000Z" itemprop="datePublished">2018-11-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/15/19/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/10/15/19/" class="title">python GIL problem</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/15/17/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/08/15/17/" class="title">RNN、LSTM、GRU、seq2seq简单理解</a></p>
+                            <p class="item-date"><time datetime="2018-08-15T07:23:00.000Z" itemprop="datePublished">2018-08-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/16/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/16/" class="title">python3中map函数的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T08:23:18.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/15/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/15/" class="title">python3中*星号操作符的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T07:47:19.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/python3笔记/">python3笔记</a><span class="category-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/">python3</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">17</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/python3/" style="font-size: 10px;">python3</a> <a href="/tags/机器学习/" style="font-size: 20px;">机器学习</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://miraachan.github.io/">Github</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 Mira Chan<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

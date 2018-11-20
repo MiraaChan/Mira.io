@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>基本线性代数复习 | Mira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="这一篇总结一点简单的线性代数知识">
+<meta name="keywords" content="机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="基本线性代数复习">
+<meta property="og:url" content="http://yoursite.com/2018/06/01/5/index.html">
+<meta property="og:site_name" content="Mira">
+<meta property="og:description" content="这一篇总结一点简单的线性代数知识">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-14T08:37:31.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="基本线性代数复习">
+<meta name="twitter:description" content="这一篇总结一点简单的线性代数知识">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.jpg" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-119579515-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?a146794f92eb69b46e02344e7af0b4ec";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Mira</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar3.jpg" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar3.jpg" />
+            <h2 id="name">Mira</h2>
+            <h3 id="title">1194798584@qq.com</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Guangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/MiraaChan">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                2
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/MiraaChan" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="instagram" class=tooltip>
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-基本线性代数复习" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            基本线性代数复习
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/06/01/5/">
+            <time datetime="2018-06-01T05:22:58.000Z" itemprop="datePublished">2018-06-01</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/机器学习/">机器学习</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><strong>这一篇总结一点简单的线性代数知识</strong><br><a id="more"></a></p>
+<h4 id="矩阵和向量"><a href="#矩阵和向量" class="headerlink" title="矩阵和向量"></a>矩阵和向量</h4><p>矩阵是二维数组<br>$\begin{bmatrix} a&amp;b&amp;c\\ d&amp;e&amp;f\\ g&amp;h&amp;i\\ j&amp;k&amp;l \end{bmatrix}$</p>
+<p>上面的矩阵有四行三列，所以是一个4*3的矩阵。<br>而向量可以说是一个多行一列的矩阵：<br>$\begin{bmatrix}w\\x\\y\\z<br>\end{bmatrix}$</p>
+<p><strong>总的来说，向量可以说是矩阵的一个子集，上面的向量是一个4*1的矩阵。</strong></p>
+<h4 id="符号标记："><a href="#符号标记：" class="headerlink" title="符号标记："></a>符号标记：</h4><ul>
+<li>$A_{ij}$ 指矩阵A的i行j列的元素</li>
+<li>一个n行向量被称为n维的向量</li>
+<li>$v_i$ 指向量的第i行</li>
+<li>在matlab中，数组的下标是从1开始的，而大部分其他语言则是从0开始的</li>
+<li>矩阵通常用大写字母表示，向量则通常使用小写字母表示</li>
+<li>纯量或者叫标量，指的是只有一个值的对象，既不是向量也不是矩阵。</li>
+<li>$R$指一个纯量集合</li>
+<li>$R^n$指一个n维的向量</li>
+</ul>
+<h4 id="加法和标量乘法"><a href="#加法和标量乘法" class="headerlink" title="加法和标量乘法"></a>加法和标量乘法</h4><p>加法和减法都是逐元素的，所以你可以简单地加或者减每一个对应的元素<br>(当加或者减两个矩阵时，两个矩阵的尺寸大小必须是相同的)：<br>$\begin{bmatrix}a&amp;b\\c&amp;d\end{bmatrix}$+$\begin{bmatrix}w&amp;x\\y&amp;z\end{bmatrix}$=$\begin{bmatrix}a+w&amp;b+x\\c+y&amp;d+z\end{bmatrix}$</p>
+<p>在标量乘法中，我们简单地将每一个元素都乘以这个标量值：<br>$\begin{bmatrix}a&amp;b\\c&amp;d\end{bmatrix}$ $ * x$ = $\begin{bmatrix}a*x&amp;b*x\\c*x&amp;d*x\end{bmatrix}$</p>
+<h4 id="矩阵向量乘法"><a href="#矩阵向量乘法" class="headerlink" title="矩阵向量乘法"></a>矩阵向量乘法</h4><p>我们把向量的列和矩阵的每一行逐元素的相乘并把结果相加得到：<br>$\begin{bmatrix}a&amp;b\\c&amp;d\\e&amp;f\end{bmatrix}$ $*$ $\begin{bmatrix}x\\y<br>\end{bmatrix}$ = $\begin{bmatrix}a*x+b*y\\c*x+d*y\\e*x+f*y\end{bmatrix}$</p>
+<p>结果是一个向量，向量必须是这个乘法的第二项。且矩阵的列数必须等于向量的行数。<br>比如： 一个m*n的矩阵乘以一个n*1的向量，结果则为m*1向量。</p>
+<h4 id="矩阵乘法"><a href="#矩阵乘法" class="headerlink" title="矩阵乘法"></a>矩阵乘法</h4><p>我们将矩阵相乘分成若干个矩阵向量乘法，然后将结果串联起来：<br>$\begin{bmatrix}a&amp;b\\c&amp;d\\e&amp;f\end{bmatrix}$ $*$ $\begin{bmatrix}w&amp;x\\y&amp;z\end{bmatrix}$ = $\begin{bmatrix}a*w+b*y &amp; a*x+b*z\\c*w+d*y&amp;c*x+d*z\\e*w+f*y&amp;e*x+f*z\end{bmatrix}$</p>
+<p>一个m*n的矩阵乘以一个n*o的矩阵，结果将会是一个m*o的矩阵。<br>在上面的例子当中，一个3*2的矩阵乘以一个2*2的矩阵，结果是一个3*2的矩阵<br>若两个矩阵相乘，则第一个矩阵的列数要和第二个矩阵的行数相同。</p>
+<p>####矩阵乘法的属性</p>
+<ul>
+<li>没有交换律：A∗B≠B∗A</li>
+<li>结合律： (A∗B)∗C=A∗(B∗C)</li>
+<li>单位矩阵表示对角线上都为1，其余为0的矩阵:<br>$\begin{bmatrix}1&amp;0&amp;0\\0&amp;1&amp;0\\0&amp;0&amp;1\end{bmatrix}$</li>
+<li><p>当单位矩阵被同样大小的矩阵相乘时，结果还是原来的矩阵。<br>感觉就像一个数乘以1还是原来那个数一样。</p>
+</li>
+<li><p>当矩阵乘以单位矩阵形如：（A * I）时，单位阵应该与另一个矩阵的列匹配。<br>当单位矩阵乘以矩阵形如：（I * A）时，单位阵应该与另一个矩阵的行匹配。</p>
+</li>
+</ul>
+<h4 id="矩阵的逆和转置"><a href="#矩阵的逆和转置" class="headerlink" title="矩阵的逆和转置"></a>矩阵的逆和转置</h4><p><strong>矩阵$A$的逆可以被表示为$A^{-1}$,矩阵和它的逆矩阵相乘为单位阵。</strong><br>如果一个矩阵不是方阵则没有逆矩阵（有伪逆矩阵）。<br>在matlab中，我们可以用inv(A)来求矩阵的逆。<br>如果一个矩阵没有逆矩阵，则这个矩阵是奇异矩阵（行列式为0的方阵）或者退化矩阵。</p>
+<p>矩阵的转置可以看做将矩阵按顺时针方向旋转90°然后左右翻转。<br>在matlab中我们可以通过函数transpos(A)或者 A’来计算矩阵的转置：<br> $A=\begin{bmatrix}a &amp; b\\c &amp; d\\e &amp; f\end{bmatrix}$</p>
+<p>  $A^T=\begin{bmatrix}a &amp; c &amp; e\\b &amp; d &amp; f\end{bmatrix}$</p>
+<p><strong>换句话说，$A_{ij} = A^T_{ji}$ 。</strong></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2018/06/01/5/" data-id="cjopvwlnj000omcvdkn3h0iip" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/06/01/6/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    多变量线性回归
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2018/05/29/4/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">梯度下降</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/11/20/20/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/11/20/20/" class="title">python multiprocessing 中imap和map的不同</a></p>
+                            <p class="item-date"><time datetime="2018-11-20T12:42:04.000Z" itemprop="datePublished">2018-11-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/15/19/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/10/15/19/" class="title">python GIL problem</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/15/17/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/08/15/17/" class="title">RNN、LSTM、GRU、seq2seq简单理解</a></p>
+                            <p class="item-date"><time datetime="2018-08-15T07:23:00.000Z" itemprop="datePublished">2018-08-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/16/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/16/" class="title">python3中map函数的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T08:23:18.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/15/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/15/" class="title">python3中*星号操作符的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T07:47:19.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/python3笔记/">python3笔记</a><span class="category-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/">python3</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">17</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/python3/" style="font-size: 10px;">python3</a> <a href="/tags/机器学习/" style="font-size: 20px;">机器学习</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://miraachan.github.io/">Github</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 Mira Chan<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

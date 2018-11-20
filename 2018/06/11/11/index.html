@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>正则化 | Mira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="正则化旨在解决过拟合问题。">
+<meta name="keywords" content="机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="正则化">
+<meta property="og:url" content="http://yoursite.com/2018/06/11/11/index.html">
+<meta property="og:site_name" content="Mira">
+<meta property="og:description" content="正则化旨在解决过拟合问题。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-14T08:38:07.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="正则化">
+<meta name="twitter:description" content="正则化旨在解决过拟合问题。">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.jpg" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-119579515-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?a146794f92eb69b46e02344e7af0b4ec";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Mira</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar3.jpg" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar3.jpg" />
+            <h2 id="name">Mira</h2>
+            <h3 id="title">1194798584@qq.com</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Guangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/MiraaChan">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                2
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/MiraaChan" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="instagram" class=tooltip>
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-正则化" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            正则化
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/06/11/11/">
+            <time datetime="2018-06-11T05:33:42.000Z" itemprop="datePublished">2018-06-11</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/机器学习/">机器学习</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><strong>正则化旨在解决过拟合问题。</strong><br><a id="more"></a></p>
+<p><strong>高偏差或者说欠拟合是指假设函数映射与数据的趋势相差很大。</strong><br>这种现象可能会发生在当假设函数过于简单或者使用过少的特征数的情况。<br>比如说，我们的假设函数为$ h_\theta(x) = \theta_0 + \theta_1x_1 + \theta_2x_2$，<br>我们希望这个线性模型将很好地拟合训练数据，且泛化能力较好（泛化能力：是指机器学习算法对新样本的适应能力。泛化能力好的算法能较好地预测新数据），但情况却并非如此。</p>
+<p><strong>而另一种极端情况，过拟合或高方差是指一个假设函数能很好的拟合数据，但不能很好地预测新数据。</strong>这种现象通常是由一个复杂的函数造成的，它会产生大量与数据无关的不必要的曲线和角度。</p>
+<p><strong>过拟合在线性和逻辑回归种都可能出现。解决过度拟合问题有两个主要方法：</strong></p>
+<ul>
+<li><strong>减少功能的数量</strong><br>a）手动选择要保留的功能。<br>b）使用模型选择算法（后面将会提到）。</li>
+<li><strong>正则化</strong><br>保留所有功能，但减小参数$\theta_j$。<br>当我们有很多稍微有用的功能时，正则化是一个不错的方法。</li>
+</ul>
+<h4 id="成本函数"><a href="#成本函数" class="headerlink" title="成本函数"></a>成本函数</h4><p><strong>如果我们的假设函数过度拟合，那么我们可以通过增加成本来减少函数中某些项的权重。</strong><br>比如说，我们希望下面这个函数更偏向二次函数：<br>$θ_0+θ_1x+θ_2x^2+θ_3x^3+θ_4x^4$<br>也就是说，我们想要减少$θ_3x^3$和$θ_4x^4$的影响。<br>我们可以这样更改成本函数，而不是直接删除这两个特征。<br><strong>$min _θ \frac{1}{2m}$</strong>$\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+1000⋅θ_3^2+1000⋅θ_4^2$</p>
+<p>可以看到，我们加了两个额外的项在最后面来增大这两个项的成本。<br>而在成本函数中，我们想要最小化结果，使其靠近0，就不得不使得$\theta_3$和$\theta_4$接近0。<br>这将大大降低了假设函数中的$θ_3x^3$和$θ_4x^4$</p>
+<p><strong>我们也可以用一个总和来调整我们所有的θ参数：</strong><br><strong>$min _θ \frac{1}{2m}$</strong>$[\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+λ\sum_{j=1}^n \theta^2_j]$</p>
+<p><strong>其中λ是正则化参数。它决定了我们theta参数的成本增加的幅度。</strong><br>可以在交互式绘图中看看正则化的效果：<a href="https://www.desmos.com/calculator/1hexc8ntqp" target="_blank" rel="noopener">https://www.desmos.com/calculator/1hexc8ntqp</a></p>
+<p><strong>使用上述成本函数和额外的正则项，我们可以使假设函数的输出更为平滑以减少过度拟合。<br>但如果选择的λ太大，可能会过多地消除该特征而导致欠拟合现象。</strong></p>
+<h4 id="正则化线性回归"><a href="#正则化线性回归" class="headerlink" title="正则化线性回归"></a>正则化线性回归</h4><p><strong>上面我们提到可以将正则化应用于线性回归和逻辑回归。<br>这里，我们先感受一下正则化线性回归。</strong></p>
+<h5 id="梯度下降"><a href="#梯度下降" class="headerlink" title="梯度下降"></a>梯度下降</h5><p>修改梯度下降函数，把$\theta_0$和其余的参数分离，因为我们不想惩罚$\theta_0$项。<br>(<strong>正则项也被成为惩罚项，对某个参数正则化，也被称为惩罚某个参数。</strong>)<br>重复{<br>    $\theta_0:=\theta_0 - \alpha \frac{1}{m} \sum_{i=1}^m(h_\theta(x^{(i)})-h^{(i)})x^{(i)}_0$<br>    $\theta_j:=\theta_0 - \alpha [\frac{1}{m} \sum_{i=1}^m(h_\theta(x^{(i)})-h^{(i)})x^{(i)}_j+\frac{\lambda}{m}\theta_j] , j∈{1,2…n}$<br>}</p>
+<p><strong>显然，$\frac{\lambda}{m}\theta_j$的作用就是正则化。</strong><br>稍微调整一下,上面的更新规则也可以这样表示：<br> $\theta_j:=θ_j(1-α\frac{λ}{m})-\theta_0 - \alpha \frac{1}{m} \sum_{i=1}^m(h_\theta(x^{(i)})-h^{(i)})x^{(i)}_j$</p>
+<p>显然，这个式子中第一项$1-α\frac{λ}{m}$总是小于1。<br>直观上，你可以看得出每一次迭代都会按照一定程度减小$\theta_j$。<br>而第二项，显然和原始的梯度下降是一样的。</p>
+<h5 id="正规方程"><a href="#正规方程" class="headerlink" title="正规方程"></a>正规方程</h5><p>现在我们把正则化应用到非迭代化的正规方程方法中。<br>增加正则化后，方程与我们的原始方程基本一直，除了我们在括号内添加了另一个项：<br>$θ=(X^TX+λ⋅L)^{-1}X^Ty$<br>其中 $L =\begin{bmatrix}<br>0  &amp;  0  &amp; \cdots\ &amp;0\\<br>0  &amp;  1  &amp; \cdots\ &amp; 0\\<br>\vdots &amp; \vdots &amp; \ddots  &amp; \vdots\\<br>0 &amp; 0  &amp; \cdots\ &amp; 1<br>\end{bmatrix}$</p>
+<p>L是一个左上角为0，对角线下方为1，其他位为0的矩阵。<br>其大小为$(n + 1)×(n + 1)$。直观可以看做一个单位阵（不包括$x_0$）乘以数λ。</p>
+<p>如我们所知，如果$m≤n$，那么$X ^ TX$是不可逆的。<br>但当我们添加$λ⋅L$项之后，$X^TX+λ⋅L$则变成了可逆的。</p>
+<h4 id="正则化逻辑回归"><a href="#正则化逻辑回归" class="headerlink" title="正则化逻辑回归"></a>正则化逻辑回归</h4><p>逻辑回归的正则化实则和正则化线性回归类似。<br>让我们从成本函数开始。</p>
+<h5 id="成本函数-1"><a href="#成本函数-1" class="headerlink" title="成本函数"></a>成本函数</h5><p>回顾逻辑回归的成本函数：<br>$J(θ)=-\frac{1}{m}\sum_{i=1}^m[y<br>^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))]$<br>同样的，我们把正则项加在成本函数的后面：<br>$J(θ)=-\frac{1}{m}\sum_{i=1}^m[y<br>^{(i)}log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))]+\frac{\lambda}{2m}\sum_{j=1}^n\theta^2_j$</p>
+<p><strong>注意：</strong>正则项中$\sum_{j=1}^n\theta^2_j$明确排除偏向项$\theta_0$。<br>（θ向量共n+1个值，下标从0到n，从$\theta_0$到$\theta_n$），只从$\theta_1$运行到$\theta_n$。</p>
+<h4 id="梯度下降-1"><a href="#梯度下降-1" class="headerlink" title="梯度下降"></a>梯度下降</h4><p>梯度下降的正则化也是和线性回归当中差不多的，我们将会把$\theta_0$和其他的参数分开来更新，因为我们不想正则化$\theta_0$项。<br>重复直到收敛: {<br>    <strong>$θ_0 := θ_0 $</strong> -$ α\frac{1}{m}\sum_{i=1}^m((h_θ(x^{(i)}) - y^{i})x^{(i)}_0)$<br>   <strong>$θ_j := θ_j $</strong> -$ α[\frac{1}{m}\sum_{i=1}^m((h_θ(x^{(i)}) - y^{i})x^{(i)}_j)+\frac{\lambda}{m}\theta_j]  $, $j∈{1,2…n}$<br>}<br><strong>显然，使用了正则化，其与用于线性回归的梯度下降函数在形式上仍是相同的。</strong></p>
+<h4 id="初始化单位特征向量"><a href="#初始化单位特征向量" class="headerlink" title="初始化单位特征向量"></a>初始化单位特征向量</h4><h5 id="常量特征"><a href="#常量特征" class="headerlink" title="常量特征"></a>常量特征</h5><p>事实证明，在开始进行任何培训之前，为特征池添加一个不变的特征至关重要。<br>通常情况下，这个特征对于每个训练集都是1。<br>具体来说，如果X是你的特征矩阵，那么$X_0$是一个单位向量。</p>
+<p><strong>下面解释需要常量特征的原因。</strong><br>这个常量特征也被称为“偏差”项，可以调整特征以更好地适应数据。</p>
+<p>比如我们只考虑一个特征$X_1$，没有$X_0$的公式是$\theta_1 * X_1 = y$。<br>显然，这是一条始终穿过原点的线，斜率为$\frac{y}{\theta_1}$。<br>而添加了$X_0$项则使得这条线通过y轴上的不同点成为可能。<br>换句话说，有偏差项能更好地调整数据，毕竟并非所有最拟合数据的模型都通过原点$(0,0)$。</p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2018/06/11/11/" data-id="cjopvwlns0016mcvds2vzgm71" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/06/13/12/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    初识神经网络
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2018/06/07/10/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">逻辑回归</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/11/20/20/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/11/20/20/" class="title">python multiprocessing 中imap和map的不同</a></p>
+                            <p class="item-date"><time datetime="2018-11-20T12:42:04.000Z" itemprop="datePublished">2018-11-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/15/19/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/10/15/19/" class="title">python GIL problem</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/15/17/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/08/15/17/" class="title">RNN、LSTM、GRU、seq2seq简单理解</a></p>
+                            <p class="item-date"><time datetime="2018-08-15T07:23:00.000Z" itemprop="datePublished">2018-08-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/16/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/16/" class="title">python3中map函数的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T08:23:18.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/15/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/15/" class="title">python3中*星号操作符的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T07:47:19.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/python3笔记/">python3笔记</a><span class="category-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/">python3</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">17</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/python3/" style="font-size: 10px;">python3</a> <a href="/tags/机器学习/" style="font-size: 20px;">机器学习</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://miraachan.github.io/">Github</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 Mira Chan<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

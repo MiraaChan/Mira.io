@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>初识神经网络 | Mira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="非线性假设函数将线性回归应用在一批复杂且有很多特征的数据集是非常不明智的。">
+<meta name="keywords" content="机器学习">
+<meta property="og:type" content="article">
+<meta property="og:title" content="初识神经网络">
+<meta property="og:url" content="http://yoursite.com/2018/06/13/12/index.html">
+<meta property="og:site_name" content="Mira">
+<meta property="og:description" content="非线性假设函数将线性回归应用在一批复杂且有很多特征的数据集是非常不明智的。">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-08-14T08:37:15.000Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="初识神经网络">
+<meta name="twitter:description" content="非线性假设函数将线性回归应用在一批复杂且有很多特征的数据集是非常不明智的。">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.jpg" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-119579515-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?a146794f92eb69b46e02344e7af0b4ec";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Mira</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar3.jpg" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar3.jpg" />
+            <h2 id="name">Mira</h2>
+            <h3 id="title">1194798584@qq.com</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Guangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/MiraaChan">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                2
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/MiraaChan" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="instagram" class=tooltip>
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-初识神经网络" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            初识神经网络
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/06/13/12/">
+            <time datetime="2018-06-13T08:45:52.000Z" itemprop="datePublished">2018-06-13</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/机器学习/">机器学习</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <h4 id="非线性假设函数"><a href="#非线性假设函数" class="headerlink" title="非线性假设函数"></a>非线性假设函数</h4><p><strong>将线性回归应用在一批复杂且有很多特征的数据集是非常不明智的。</strong><br><a id="more"></a><br>假设你想用三个特征来组合产生所有二次项，并创建一个假设函数：<br>$g(θ_0+θ_1x^2_1+θ_2x_1x_2+θ_3x_1x_3+θ_4x^2_2+θ_5x_2x_3+θ_6x^2_3)$<br>可以看到，这里有6个特征，可以通过组合公式：$\frac{n+r-1}{r!(n-1)!}$ ，<br>来计算能产生多少个多项式组合。</p>
+<p>比如100个特征，则可以产生$\frac{100+2-1}{2!(n100-1)!}=5050$个二次项特征。<br>如果想将特征组合成二次项，我们可以粗略地用$O(n^2/2)$来表示新特征数的增长情况。<br>如果想组合成立方式的话，特征数则约为$O(n^3)$。<br>这个增长比例是十分夸张的，所以随着特征数的增加，二次项和三次项的特征增加得十分迅速，此时若再使用线性回归是十分不切实际的。</p>
+<p><strong>举个例子：</strong>假设我们有一些50*50像素的黑白照片，我们的目标是分类出哪些照片是车。<br>此时我们的特征数n=2500，如果我们比较每一个像素点。<br>现在，如果我们需要构造一个二次项假设函数，根据前文，我们知道增长比例约为O(n^2/2)。所以，我们总共有$2500^2/2=3125000$个特征，可想而知，此时使用线性回归是十分不切实际的。</p>
+<p><strong>当我们遇到了很多特征的复杂函数时，神经网络提供了另一种机器学习的方法。</strong></p>
+<h4 id="神经元和大脑"><a href="#神经元和大脑" class="headerlink" title="神经元和大脑"></a>神经元和大脑</h4><p><strong>神经网络主要是通过模仿我们的大脑是如何工作的。</strong><br>由于计算机硬件的进步，神经网络近期有了一次重大的复兴。<br>（早年神经网络的提出，由于计算机硬件的限制，无法得以发展。）</p>
+<p><strong>有证据表明，大脑对所有不同的功能只使用一种“学习算法”。</strong><br>科学家们曾经试图切断耳道和听觉皮层之间的连接，<br>并将听觉皮层重新连接到光学神经上，发现听觉皮层慢慢地学会了看。</p>
+<p><strong>这个原理被称为“神经可塑性”，并有许多例子和实验证据。</strong></p>
+<h4 id="模型表示-I"><a href="#模型表示-I" class="headerlink" title="模型表示 I"></a>模型表示 I</h4><p><strong>让我们来看看如何使用神经网络来表示一个假设函数。</strong></p>
+<p>**简单地说，神经元可以看做是一个计算单位，<br>它们将（来自树突的）输入作为电输入，（经过轴突）将其引导到输出。</p>
+<p>在我们的模型当中，树突的输入相当于我们的输入特征$x_1…x_n$,而输出则是我们的假设函数：**</p>
+<p><strong>在这个模型中，我们的$X_0$输入节点也被成为“偏向单元”，其总是为1。</strong><br><strong>在神经网络中，我们使用同样的逻辑函数用于分类：$\frac{1}{1+e^{Θ^Tx}}$。<br>有时，我们也把它称为sigmoid（逻辑）激活函数。</strong></p>
+<p><strong>其中，在神经网络模型中，$Θ$参数经常被称为”权重”。</strong><br>一个简单的模型表示如下：<br>$\begin{bmatrix}x_0 \\ x_1\\ x_2\end{bmatrix}→\begin{bmatrix}\end{bmatrix}→h_Θ(x)$<br>在上面这个模型中，我们的输入节点（层1）被传入另一个节点（层2)，并作为假设函数输出。<br>第一层也被成为“输入层”，最后一层被称为“输出层”，输出层会给出通过假设函数输出的最终值。</p>
+<p>我们可以在输入层和输出层之间加入中间层节点，称为<strong>“隐层”</strong>。<br>我们给这些中间层（或者叫隐层）标志为$a^2_0…a^2_n$，并称之为<strong>“激活单元”</strong>。<br><strong>$a^{(j)}_i =$第j层i个激活单元</strong><br><strong>$Θ^{(j)}$控制从j层映射到j+1层的权重矩阵</strong></p>
+<p>如果我们有一个隐层，则模型看起来如下：</p>
+<p>$\begin{bmatrix}x_0 \\ x_1\\ x_2\\ x_3\end{bmatrix}→\begin{bmatrix}a^{(2)}_1\\a^{(2)}_2\\a^{(2)}_3\end{bmatrix}<br>→h_Θ(x)$</p>
+<p>每一个“激活”节点是这样得到的：<br>$a^{(2)}_1=g(Θ^{(1)}_{10}x_0+Θ^{(1)}_{11}x_1+Θ^{(1)}_{12}x_2+Θ^{(1)}_{13}x_3)$<br>$a^{(2)}_2=g(Θ^{(1)}_{20}x_0+Θ^{(1)}_{21}x_1+Θ^{(1)}_{22}x_2+Θ^{(1)}_{23}x_3)$<br>$a^{(2)}_3=g(Θ^{(1)}_{30}x_0+Θ^{(1)}_{31}x_1+Θ^{(1)}_{32}x_2+Θ^{(1)}_{33}x_3)$<br>$h_Θ(x)=a^{(3)}_1=g(Θ^{(2)}_{10}a^{(2)}_0+Θ^{(2)}_{11}a^{(2)}_1+Θ^{(2)}_{12}a^{(2)}_2+Θ^{(2)}_{13}a^{(2)}_3)$</p>
+<p><strong>也就是说，要计算这个模型的激活节点，我们需要一个3*4的参数矩阵。<br>我们将每行参数应用于我们的输入以获取一个激活节点的值。<br>我们的假设函数输出是将逻辑函数应用于激活节点和参数$Θ^{(2)}$的乘积之和,<br>其中$Θ^{(2)}$包含了第二层节点的权重。</strong></p>
+<p>每一层都有一个自己的参数（权重）矩阵。<br>该权重矩阵的大小取决于：<br>如果该网络的$j$层有$s_j$个单元，$j+1$层有$s_{j+1}$个单元，那么权重矩阵$Θ_j$的大小将为$s_{j+1}×(s_j+1)$。<br>其中，+1是“偏向节点”$x_0$和$Θ^{(j)}_0$项的运算。<br><strong>换句话说，输出节点中没有偏向节点，但输入节点中则包含偏向节点。</strong></p>
+<p><strong>举个例子：</strong><br>层1有2个输入节点，而层2有4个激活节点，<br>那么参数矩阵$Θ^{(j)}$则是一个4*3的矩阵，<br>其中，$s_j=2$，$s_{j+1}=4$，则$s_{j+1}×(s_j+1)=4*3$</p>
+<h4 id="模型表示-II"><a href="#模型表示-II" class="headerlink" title="模型表示 II"></a>模型表示 II</h4><p>在这一节当中，我们将对上述的函数实现<strong>向量化</strong>。<br>我们将要定义一个新的变量$z^{(j)}_k$来包含g函数中的参数。<br><strong>在前面的例子中，我们可用z来替代所有的参数：</strong><br>$a^{(2)}_1=g(z^{(2)}_1)$<br>$a^{(2)}_2=g(z^{(2)}_2)$<br>$a^{(2)}_3=g(z^{(2)}_3)$</p>
+<p><strong>换句话说，对于层j=2，第k个节点，变量z如下:</strong><br>$z^{(2)}_k=Θ^{(1)}_{k0}x_0+Θ^{(1)}_{k1}x_1+Θ^{(1)}_{kn}x_n$</p>
+<p><strong>向量化的$x$和$z^j$如下：</strong><br>$x=\begin{bmatrix}x_0\\x_1\\…\\x_n\end{bmatrix} ,z^{(j)}=\begin{bmatrix}z^{(j)}_1\\z^{(j)}_2\\…\\z^{(j)}_n\end{bmatrix}$</p>
+<p><strong>将$x$表示为$a^{(1)}$，我们可以重新整理公式如下：</strong><br>$z^{j}=Θ^{(j-1)}a^{(j-1)}$<br>可以看出，$Θ^{(j-1)}$的大小为$s_j×(n+1)$，<br>其中$s_j$是激活节点的数目,$a^{(j-1)}$是$n+1$维的向量，<br>显然$z^{j}$的大小将为$s_j$。</p>
+<p><strong>现在，我们可以得到j层的激活节点：</strong><br>$a^{(j)}=g(z^{(j)})$，其中函数g将会逐元素的应用在向量$z^{(j)}$上。<br>在我们计算完$a^{(j)}$后，我们可以加一个偏向单元（等于1），也就是$a_0^{(j)}$。<br><strong>为了计算我们最终的假设函数，我们首先要计算另一个z向量：</strong><br>$z^{j+1}=Θ^{(j)}a^{(j)}$<br>然后我们得到最后的结果如下：<br>$h_Θ(x)=a^{(j+1)}=g(z^{(j+1)})$</p>
+<p><strong>可以看到在最后一步中，层j和层j+1之间做的是和逻辑回归同样的事情。</strong></p>
+<p><strong>在神经网络中，这些中间层使得我们可以很优雅地生成更加有趣且复杂的非线性假设函数。</strong></p>
+<h4 id="例子和直观理解-I"><a href="#例子和直观理解-I" class="headerlink" title="例子和直观理解 I"></a>例子和直观理解 I</h4><p><strong>一个简单的例子是把神经网络应用到预测$x_1$和$x_2$的逻辑与</strong><br>(只有当$x_1$和$x_2$同时为1的时候返回True)。</p>
+<p><strong>我们的函数如下：</strong><br>$\begin{bmatrix}x_0\\x_1\\x_2\end{bmatrix}→\begin{bmatrix}g(z^{(2)})\end{bmatrix}→hΘ(x)$,其中偏向项$x_0=1$。</p>
+<p><strong>设置第一个$Θ$矩阵如下：</strong><br>$Θ^{(1)}=\begin{bmatrix}-30\\20\\20\end{bmatrix}$</p>
+<p><strong>这将会导致假设函数的输出仅在$x_1$和$x_2$同时为1的时候为1。</strong></p>
+<p>换句话说：<br>$h_Θ(x)=g(−30+20x_1+20x_2)$<br>$x_1=0$  且  $x_2=0$  那么  $g(−30)≈0$<br>$x_1=0$  且  $x_2=1$  那么  $g(−10)≈0$<br>$x_1=1$  且  $x_2=0$  那么  $g(−10)≈0$<br>$x_1=1$  且  $x_2=1$  那么  $g(10)≈1$</p>
+<p><strong>也就是说我们可以通过使用小型神经网络,<br>而不是使用实际的与门来构建计算机中的基本操作之一。<br>当然，神经网络也可以用来模拟所有其他的逻辑门。</strong></p>
+<h4 id="例子和直观理解-II"><a href="#例子和直观理解-II" class="headerlink" title="例子和直观理解 II"></a>例子和直观理解 II</h4><p><strong>我们可以这样构建与（AND）、非(NOR)、或（OR）等逻辑门的参数矩阵$Θ^{(1)}$：</strong><br><strong>AND:</strong><br>$Θ^{(1)}=\begin{bmatrix}−30&amp;20&amp;20\end{bmatrix}$<br><strong>NOR:</strong><br>$Θ^{(1)}=\begin{bmatrix}10&amp;−20&amp;−20\end{bmatrix}$<br><strong>OR:</strong><br>$Θ^{(1)}=\begin{bmatrix}−10&amp;20&amp;20\end{bmatrix}$</p>
+<p><strong>通过这些，我们可以组合出同或（XNOR）逻辑门（当$x_1$和$x_2$同时为1或0时为1）。</strong><br>$\begin{bmatrix}x_0\\x_1\\x_2\end{bmatrix}→\begin{bmatrix}a^{(2)}_1\\a^{(2)}_2\end{bmatrix}→\begin{bmatrix}a^{(3)}\end{bmatrix}→hΘ(x)$ </p>
+<p><strong>对于第一层和第二层之间的过渡，我们将使用$Θ^{(1)}$,其中结合了AND和NOR的值：</strong><br>$Θ^{(1)}=\begin{bmatrix}−30&amp;20&amp;20\\10&amp;−20&amp;−20\end{bmatrix}$</p>
+<p><strong>而第二层和第三层之间的过渡，我们将使用$Θ^{(2)}$（使用了OR的值）：</strong><br>$Θ^{(2)}=\begin{bmatrix}−10&amp;20&amp;20\end{bmatrix}$</p>
+<p><strong>最后整理一下所有节点：</strong><br>$a^{(2)}=g(Θ^{(1)}⋅x)$<br>$a^{(3)}=g(Θ^{(2)}⋅a^{(2)})$<br>$h_Θ(x)=a^{(3)}$</p>
+<p><strong>到这里为止，我们为XNOR操作构建了两个隐层。</strong></p>
+<h4 id="多元分类"><a href="#多元分类" class="headerlink" title="多元分类"></a>多元分类</h4><p><strong>在神经网络中，如果想要进行多元分类，需要使得假设函数返回一个向量组。</strong></p>
+<p><strong>比如，我们想要将数据分为4类：</strong><br>$\begin{bmatrix}x_0\\x_1\\x_2\\…\\x_n\end{bmatrix}→\begin{bmatrix}a^{(2)}_0\\a^{(2)}_1\\a^{(2)}_2\\…\end{bmatrix}→\begin{bmatrix}a^{(3)}_0\\a^{(3)}_1\\a^{(3)}_2\\…\end{bmatrix}→\begin{bmatrix}h_Θ(x)_1\\h_Θ(x)_2\\h_Θ(x)_3\\h_Θ(x)_4\end{bmatrix}→$ </p>
+<p><strong>我们对一组输入的假设函数输出结果可能如下所示：</strong><br>$h_Θ(x)=\begin{bmatrix}0\\0\\1\\0\end{bmatrix}$<br><strong>这种情况意味着，我们的结果类是第三个类。</strong><br><strong>我们可以将我们的结果类定义为y：</strong><br>$y^{(i)}=\begin{bmatrix}1\\0\\0\\0\end{bmatrix},\begin{bmatrix}0\\1\\0\\0\end{bmatrix},\begin{bmatrix}0\\0\\1\\0\end{bmatrix},\begin{bmatrix}0\\0\\0\\1\end{bmatrix}$<br><strong>假设函数对一组输入的最终输出值将是y中的一个元素。</strong></p>
+
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2018/06/13/12/" data-id="cjopvwlng000gmcvdo84qjv2b" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/06/23/13/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    神经网络：学习
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2018/06/11/11/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">正则化</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/11/20/20/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/11/20/20/" class="title">python multiprocessing 中imap和map的不同</a></p>
+                            <p class="item-date"><time datetime="2018-11-20T12:42:04.000Z" itemprop="datePublished">2018-11-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/15/19/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/10/15/19/" class="title">python GIL problem</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/15/17/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/08/15/17/" class="title">RNN、LSTM、GRU、seq2seq简单理解</a></p>
+                            <p class="item-date"><time datetime="2018-08-15T07:23:00.000Z" itemprop="datePublished">2018-08-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/16/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/16/" class="title">python3中map函数的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T08:23:18.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/15/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/15/" class="title">python3中*星号操作符的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T07:47:19.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/python3笔记/">python3笔记</a><span class="category-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/">python3</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">17</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/python3/" style="font-size: 10px;">python3</a> <a href="/tags/机器学习/" style="font-size: 20px;">机器学习</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://miraachan.github.io/">Github</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 Mira Chan<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>

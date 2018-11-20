@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang=zh>
+<head>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><meta charset="utf-8">
+    
+    <title>python GIL problem | Mira</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+    <meta name="description" content="本篇文章主要了解一下Python 中的GIL问题。众所周知，在使用到python的多线程时，我们都会遇到GIL这个问题，使得多线程性能陷入瓶颈。  先附上参考链接：What is the Python Global Interpreter Lock(GIL)？Python的GIL是什么鬼，多线程性能究竟如何">
+<meta name="keywords" content="python3">
+<meta property="og:type" content="article">
+<meta property="og:title" content="python GIL problem">
+<meta property="og:url" content="http://yoursite.com/2018/10/15/19/index.html">
+<meta property="og:site_name" content="Mira">
+<meta property="og:description" content="本篇文章主要了解一下Python 中的GIL问题。众所周知，在使用到python的多线程时，我们都会遇到GIL这个问题，使得多线程性能陷入瓶颈。  先附上参考链接：What is the Python Global Interpreter Lock(GIL)？Python的GIL是什么鬼，多线程性能究竟如何">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:updated_time" content="2018-11-20T15:15:11.323Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="python GIL problem">
+<meta name="twitter:description" content="本篇文章主要了解一下Python 中的GIL问题。众所周知，在使用到python的多线程时，我们都会遇到GIL这个问题，使得多线程性能陷入瓶颈。  先附上参考链接：What is the Python Global Interpreter Lock(GIL)？Python的GIL是什么鬼，多线程性能究竟如何">
+    
+
+    
+
+    
+        <link rel="icon" href="/css/images/favicon.jpg" />
+    
+
+    <link rel="stylesheet" href="/libs/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/libs/open-sans/styles.css">
+    <link rel="stylesheet" href="/libs/source-code-pro/styles.css">
+
+    <link rel="stylesheet" href="/css/style.css">
+
+    <script src="/libs/jquery/2.1.3/jquery.min.js"></script>
+    
+    
+        <link rel="stylesheet" href="/libs/lightgallery/css/lightgallery.min.css">
+    
+    
+        <link rel="stylesheet" href="/libs/justified-gallery/justifiedGallery.min.css">
+    
+    
+        <script type="text/javascript">
+(function(i,s,o,g,r,a,m) {i['GoogleAnalyticsObject']=r;i[r]=i[r]||function() {
+(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+})(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+ga('create', 'UA-119579515-1', 'auto');
+ga('send', 'pageview');
+
+</script>
+    
+    
+    
+        <script>
+var _hmt = _hmt || [];
+(function() {
+    var hm = document.createElement("script");
+    hm.src = "//hm.baidu.com/hm.js?a146794f92eb69b46e02344e7af0b4ec";
+    var s = document.getElementsByTagName("script")[0];
+    s.parentNode.insertBefore(hm, s);
+})();
+</script><!-- hexo-inject:begin --><!-- hexo-inject:end -->
+
+    
+
+
+</head>
+
+<body>
+    <!-- hexo-inject:begin --><!-- hexo-inject:end --><div id="container">
+        <header id="header">
+    <div id="header-main" class="header-inner">
+        <div class="outer">
+            <a href="/" id="logo">
+                <i class="logo"></i>
+                <span class="site-title">Mira</span>
+            </a>
+            <nav id="main-nav">
+                
+                    <a class="main-nav-link" href="/.">Home</a>
+                
+                    <a class="main-nav-link" href="/archives">Archives</a>
+                
+                    <a class="main-nav-link" href="/categories">Categories</a>
+                
+                    <a class="main-nav-link" href="/tags">Tags</a>
+                
+                    <a class="main-nav-link" href="/about">About</a>
+                
+            </nav>
+            
+                
+                <nav id="sub-nav">
+                    <div class="profile" id="profile-nav">
+                        <a id="profile-anchor" href="javascript:;">
+                            <img class="avatar" src="/css/images/avatar3.jpg" />
+                            <i class="fa fa-caret-down"></i>
+                        </a>
+                    </div>
+                </nav>
+            
+            <div id="search-form-wrap">
+
+    <form class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+        <button type="submit" class="search-form-submit"></button>
+    </form>
+    <div class="ins-search">
+    <div class="ins-search-mask"></div>
+    <div class="ins-search-container">
+        <div class="ins-input-wrapper">
+            <input type="text" class="ins-search-input" placeholder="想要查找什么..." />
+            <span class="ins-close ins-selectable"><i class="fa fa-times-circle"></i></span>
+        </div>
+        <div class="ins-section-wrapper">
+            <div class="ins-section-container"></div>
+        </div>
+    </div>
+</div>
+<script>
+(function (window) {
+    var INSIGHT_CONFIG = {
+        TRANSLATION: {
+            POSTS: '文章',
+            PAGES: '页面',
+            CATEGORIES: '分类',
+            TAGS: '标签',
+            UNTITLED: '(未命名)',
+        },
+        ROOT_URL: '/',
+        CONTENT_URL: '/content.json',
+    };
+    window.INSIGHT_CONFIG = INSIGHT_CONFIG;
+})(window);
+</script>
+<script src="/js/insight.js"></script>
+
+</div>
+        </div>
+    </div>
+    <div id="main-nav-mobile" class="header-sub header-inner">
+        <table class="menu outer">
+            <tr>
+                
+                    <td><a class="main-nav-link" href="/.">Home</a></td>
+                
+                    <td><a class="main-nav-link" href="/archives">Archives</a></td>
+                
+                    <td><a class="main-nav-link" href="/categories">Categories</a></td>
+                
+                    <td><a class="main-nav-link" href="/tags">Tags</a></td>
+                
+                    <td><a class="main-nav-link" href="/about">About</a></td>
+                
+                <td>
+                    
+    <div class="search-form">
+        <input type="text" class="ins-search-input search-form-input" placeholder="搜索" />
+    </div>
+
+                </td>
+            </tr>
+        </table>
+    </div>
+</header>
+
+        <div class="outer">
+            
+                
+
+<aside id="profile" class="profile-fixed">
+    <div class="inner profile-inner">
+        <div class="base-info profile-block">
+            <img id="avatar" src="/css/images/avatar3.jpg" />
+            <h2 id="name">Mira</h2>
+            <h3 id="title">1194798584@qq.com</h3>
+            <span id="location"><i class="fa fa-map-marker"></i>Guangzhou, China</span>
+            <a id="follow" target="_blank" href="https://github.com/MiraaChan">关注我</a>
+        </div>
+        <div class="article-info profile-block">
+            <div class="article-info-block">
+                21
+                <span>文章</span>
+            </div>
+            <div class="article-info-block">
+                2
+                <span>标签</span>
+            </div>
+        </div>
+        
+        <div class="profile-block social-links">
+            <table>
+                <tr>
+                    
+                    
+                    <td>
+                        <a href="https://github.com/MiraaChan" target="_blank" title="github" class=tooltip>
+                            <i class="fa fa-github"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="instagram" class=tooltip>
+                            <i class="fa fa-instagram"></i>
+                        </a>
+                    </td>
+                    
+                    <td>
+                        <a href="/" target="_blank" title="facebook" class=tooltip>
+                            <i class="fa fa-facebook"></i>
+                        </a>
+                    </td>
+                    
+                </tr>
+            </table>
+        </div>
+        
+    </div>
+</aside>
+
+            
+            <section id="main"><article id="post-python-GIL-problem" class="article article-type-post" itemscope itemprop="blogPost">
+    <div class="article-inner">
+        
+        
+            <header class="article-header">
+                
+    
+        <h1 class="article-title" itemprop="name">
+            python GIL problem
+        </h1>
+    
+
+                
+                    <div class="article-meta">
+                        
+    <div class="article-date">
+        <i class="fa fa-calendar"></i>
+        <a href="/2018/10/15/19/">
+            <time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time>
+        </a>
+    </div>
+
+
+                        
+    <div class="article-category">
+    	<i class="fa fa-folder"></i>
+        <a class="article-category-link" href="/categories/python3笔记/">python3笔记</a>
+    </div>
+
+                        
+    <div class="article-tag">
+        <i class="fa fa-tag"></i>
+        <a class="tag-link" href="/tags/python3/">python3</a>
+    </div>
+
+                    </div>
+                
+            </header>
+        
+        
+        <div class="article-entry" itemprop="articleBody">
+        
+            
+            <p><strong>本篇文章主要了解一下Python 中的GIL问题。<br>众所周知，在使用到python的多线程时，我们都会遇到GIL这个问题，使得多线程性能陷入瓶颈。</strong></p>
+<ul>
+<li>先附上参考链接：<br><a href="https://realpython.com/python-gil/" target="_blank" rel="noopener">What is the Python Global Interpreter Lock(GIL)？</a><br><a href="http://cenalulu.github.io/python/gil-in-python/" target="_blank" rel="noopener">Python的GIL是什么鬼，多线程性能究竟如何</a><a id="more"></a>
+</li>
+</ul>
+<h4 id="什么时候会遇到GIL问题？"><a href="#什么时候会遇到GIL问题？" class="headerlink" title="什么时候会遇到GIL问题？"></a>什么时候会遇到GIL问题？</h4><p>说到GIL，很多人会把其称之为python多线程中必然会遇到的一个问题。<br>其实不然，这不是python本身的问题，而是我们常用的一个解析器cpython所带来的问题。</p>
+<p>而cpython只是python的一种解析器，意味着还有许多其他的解析器是没有这样一个问题的。<br>但cpython作为最常用的一个解析器，在一定程度上受到了广大编程爱好者的青睐。</p>
+<p>换言之，在使用python进行多线程编程时，若使用cpython解析器必然需要遇到GIL问题。</p>
+<h4 id="到底什么是GIL？"><a href="#到底什么是GIL？" class="headerlink" title="到底什么是GIL？"></a>到底什么是GIL？</h4><p>GIL 全称 Global Interpreter Lock（全局解释器锁）。<br>简单来说，GIL是一个互斥锁，它只允许一个线程来控制Python解释器。</p>
+<p>这意味着在任何时间点只有一个线程可以处于执行状态，<br>这将可能成为CPU-bound(计算密集型)多线程代码中的性能瓶颈。</p>
+<p>而且，即使是在多核CPU的情况下也是如此，所以GIL问题可以说是臭名昭著了。</p>
+<h4 id="GIL对python有什么用？"><a href="#GIL对python有什么用？" class="headerlink" title="GIL对python有什么用？"></a>GIL对python有什么用？</h4><ul>
+<li><p><strong>Python使用“引用计数”进行内存管理。</strong><br>这意味着在Python中创建的对象具有“引用计数”变量，<br>该变量用于跟踪指向对象的引用数。<br>当此计数达到零时，释放对象占用的内存。</p>
+</li>
+<li><p>问题在于，当两个线程同时更改这个值时，其需要受到保护。<br>如果没有保护好它，可能会导致内存泄露（有些内存可能永远无法释放）；<br>更糟糕的情况比如：当对象依然存在而内存却不正常地提前释放。<br>这可能会导致Python程序中出现崩溃或其他错误。</p>
+</li>
+<li><p>通过向跨线程共享的所有数据结构添加锁，<br>可以保持此“引用计数”变量的安全，从而不会导致以上这种现象。</p>
+</li>
+<li><p>给每个对象或者对象组加锁，意味着可能产生多个锁，<br>就可能产生另一个问题——死锁问题（只可能发生在有多个锁的情况）。<br>重复地获取和释放锁将会在另一个程度上降低性能。</p>
+</li>
+<li><p>GIL是解释器本身的单个锁，它增加了一条规则，即执行任何Python字节码都需要获取解释器锁。<br>这可以防止死锁（因为只有一个锁）并且不会引入太多的性能开销。但它使任何受CPU限制的Python程序都是单线程的。</p>
+</li>
+<li><p>GIL虽然也被解释器用于其他语言（如Ruby），但并不是解决此问题的唯一方法。<br>有些语言通过使用除引用计数之外的方法（例如垃圾收集）来避免GIL对线程安全内存管理的要求。</p>
+</li>
+</ul>
+<h4 id="为什么选择GIL来解决问题"><a href="#为什么选择GIL来解决问题" class="headerlink" title="为什么选择GIL来解决问题"></a>为什么选择GIL来解决问题</h4><p><strong>那么，为什么这样的一个方法还在python中被使用？这个方法真的这么糟糕吗？</strong></p>
+<ul>
+<li>事实上，GIL的设计是python变得如此受欢迎的原因之一。</li>
+<li><p>在python起初被使用时，操作系统还没有线程的概念。<br>python被设计来使用开发人员可以更快更简单地编程，所以越来越多的开发人员开始使用它。</p>
+</li>
+<li><p>python中有许多现有的C库扩展。为了防止不一致的更改，这些C扩展需要GIL提供的线程安全内存管理。</p>
+</li>
+<li><p>GIL实现简单且容易整合进python。由于只需要管理单个锁，它使得python中单线程的程序性能得到提升。</p>
+</li>
+<li><p>有了GIL，非线程安全的C库变得更容易集成。而这些C扩展，也成为不同社区采用python的原因之一。</p>
+</li>
+<li><p>综上所诉，GIL确实是一个实用的解决方法，可以解决CPython开发人员在Python初期遇到的一个难题。</p>
+</li>
+</ul>
+<h4 id="GIL对python多线程编程的影响"><a href="#GIL对python多线程编程的影响" class="headerlink" title="GIL对python多线程编程的影响"></a>GIL对python多线程编程的影响</h4><ul>
+<li>对于CPU-bound(计算密集型) 和I/O bound(I/O密集型)两种不同类型的程序，在性能上有所不同。</li>
+</ul>
+<p>-CPU密集型的程序使得CPU利用达到极致，这包括进行数学计算的程序，如矩阵乘法，搜索，图像处理等。</p>
+<ul>
+<li><p>I/O密集型程序需要花费时间等待输入\输出，其可以来自用户、文件、数据库、网络等。<br>其有时必须等待大量时间，直到它们从源获得所需内容。<br>例如，用户需要考虑在实际进程中在输入框中输入什么，或者考虑从数据库中查询什么等。</p>
+</li>
+<li><p>由于GIL阻止了CPU密集型线程的并发执行，几乎同样的程序，<br>采用单线程和多线程的时间，往往多线程的时间并不会比单线程的短甚至更长。</p>
+</li>
+<li><p>由于在等待I/O时，GIL可以在不同线程中流转，故GIL对I/O密集型多线程程序影响并不大。</p>
+</li>
+</ul>
+<h4 id="为啥GIL问题仍未被移除？"><a href="#为啥GIL问题仍未被移除？" class="headerlink" title="为啥GIL问题仍未被移除？"></a>为啥GIL问题仍未被移除？</h4><ul>
+<li><p>python的开发人员对此有很多怨言，但若是移除GIL，则可能会导致向后不兼容问题。</p>
+</li>
+<li><p>GIL显然可以被删除，开发人员和研究人员过去已经多次这样做了，<br>但所有这些尝试都破坏了现有的C扩展，这些扩展在很大程度上依赖于GIL提供的解决方案</p>
+</li>
+<li><p>当然，也有很多别的方法可以替代GIL，但其中有一些会降低单线程以及多线程I/O密集型程序，还有一些难以实现。<br>毕竟，我们不希望移除GIL后得到的新版本，比旧版本性能差吧。</p>
+</li>
+</ul>
+<h4 id="为什么Python3中仍然没有将它移除？"><a href="#为什么Python3中仍然没有将它移除？" class="headerlink" title="为什么Python3中仍然没有将它移除？"></a>为什么Python3中仍然没有将它移除？</h4><ul>
+<li><p>Python3 确实有机会从头开始启动很多新的功能，并打破一些现有的C扩展。<br>但将原有的程序更新并移植到Python3仍需要时间，这也是为啥一开始Python 3在社区中并不那么受欢迎。</p>
+</li>
+<li><p>如果移除GIL，Python3在单线程程序上的性能将低于Python2 ，<br>你可以说python单线程程序的性能多亏了有GIL，所以这就是为什么Python3中仍然有GIL问题。</p>
+</li>
+<li><p>但，在Python3中，确实针对GIL问题，做了很大的提升：</p>
+</li>
+<li><p>我们前面讨论了GIL对于CPU密集型以及I/O密集型程序的影响，<br>那么当程序既是CPU密集型又是I/O密集型程序呢？</p>
+</li>
+<li><p>此时，GIL问题将会使得I/O密集型线程饿死（无法从CPU密集型线程那获得GIL）。</p>
+</li>
+<li><p>这是因为Python的内部机制决定了GIL在固定的连续使用时间后将会被释放，<br>但如果此时没有程序获取GIL，那么原来那个线程将会继续运行。<br>而在这个机制中，CPU密集型线程将会在其他线程获取GIL前重新获取GIL。</p>
+</li>
+<li><p>这个问题在2009年由Antoine Pitrou在Python 3.2中得到修复。<br>他添加了一种机制，可以查看被删除的其他线程的GIL获取请求数，<br>并且在其他线程有机会运行之前不允许当前线程重新获取GIL。</p>
+</li>
+</ul>
+<h4 id="那到底如何解决GIL问题呢？"><a href="#那到底如何解决GIL问题呢？" class="headerlink" title="那到底如何解决GIL问题呢？"></a>那到底如何解决GIL问题呢？</h4><p><strong>如果GIL给你带了麻烦，可以尝试以下几种方法：</strong></p>
+<ul>
+<li><p><strong>Multi-processing vs multi-threading:</strong>最受欢迎的一个方法是使用多进程代替多线程。<br>每一个Python程序有自己的Python解释器和存储空间，所以将不会有GIL问题。<br>Python中有一个multiprocessing 模块 。与多线程相比，多进程在性能上有了不错的提升，<br>但时间并没有随着进程的增加而减少相应的倍数，因为进程管理有自己的开销。<br>进程比线程的开销更大，因此这将成为多进程程序运行的瓶颈。</p>
+</li>
+<li><p><strong>选择其他Python解释器：</strong>Python有很多解释器比如最受欢迎的几种：Cpython、Jython，<br>IronPython还有Pypy，分别是由C、Java、C#和python实现的。GIL仅存在于Cpython中。<br>如果你的程序有这些包，你也可以尝试用这些解释器。</p>
+</li>
+<li><p><strong>再等等吧：</strong>很多Python使用者享用着GIL所带来的单线程程序的性能，而多线程程序的开发者也不必担心。<br>Python社区中有一群大佬正在致力于将GIL从CPython中移除。<br>其中，有一种尝试被称为<a href="https://github.com/larryhastings/gilectomy" target="_blank" rel="noopener">Gilectomy</a>,不过其实好像最近没啥动静。</p>
+</li>
+</ul>
+<h5 id="GIL一直被认为是一个神秘而困难的话题。但作为开发者，如果你正在使用C扩展，或者说你的程序是CPU密集型程序，才会被GIL影响。"><a href="#GIL一直被认为是一个神秘而困难的话题。但作为开发者，如果你正在使用C扩展，或者说你的程序是CPU密集型程序，才会被GIL影响。" class="headerlink" title="GIL一直被认为是一个神秘而困难的话题。但作为开发者，如果你正在使用Ｃ扩展，或者说你的程序是CPU密集型程序，才会被GIL影响。"></a>GIL一直被认为是一个神秘而困难的话题。但作为开发者，如果你正在使用Ｃ扩展，或者说你的程序是CPU密集型程序，才会被GIL影响。</h5>
+        
+        </div>
+        <footer class="article-footer">
+            <div class="share-container">
+
+
+
+</div>
+
+    <a data-url="http://yoursite.com/2018/10/15/19/" data-id="cjopvwlmx0000mcvd98q7r3p2" class="article-share-link"><i class="fa fa-share"></i>分享到</a>
+<script>
+    (function ($) {
+        // Prevent duplicate binding
+        if (typeof(__SHARE_BUTTON_BINDED__) === 'undefined' || !__SHARE_BUTTON_BINDED__) {
+            __SHARE_BUTTON_BINDED__ = true;
+        } else {
+            return;
+        }
+        $('body').on('click', function() {
+            $('.article-share-box.on').removeClass('on');
+        }).on('click', '.article-share-link', function(e) {
+            e.stopPropagation();
+
+            var $this = $(this),
+                url = $this.attr('data-url'),
+                encodedUrl = encodeURIComponent(url),
+                id = 'article-share-box-' + $this.attr('data-id'),
+                offset = $this.offset(),
+                box;
+
+            if ($('#' + id).length) {
+                box = $('#' + id);
+
+                if (box.hasClass('on')){
+                    box.removeClass('on');
+                    return;
+                }
+            } else {
+                var html = [
+                    '<div id="' + id + '" class="article-share-box">',
+                        '<input class="article-share-input" value="' + url + '">',
+                        '<div class="article-share-links">',
+                            '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="fa fa-twitter article-share-twitter" target="_blank" title="Twitter"></a>',
+                            '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="fa fa-facebook article-share-facebook" target="_blank" title="Facebook"></a>',
+                            '<a href="http://pinterest.com/pin/create/button/?url=' + encodedUrl + '" class="fa fa-pinterest article-share-pinterest" target="_blank" title="Pinterest"></a>',
+                            '<a href="https://plus.google.com/share?url=' + encodedUrl + '" class="fa fa-google article-share-google" target="_blank" title="Google+"></a>',
+                        '</div>',
+                    '</div>'
+                ].join('');
+
+              box = $(html);
+
+              $('body').append(box);
+            }
+
+            $('.article-share-box.on').hide();
+
+            box.css({
+                top: offset.top + 25,
+                left: offset.left
+            }).addClass('on');
+
+        }).on('click', '.article-share-box', function (e) {
+            e.stopPropagation();
+        }).on('click', '.article-share-box-input', function () {
+            $(this).select();
+        }).on('click', '.article-share-box-link', function (e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            window.open(this.href, 'article-share-box-window-' + Date.now(), 'width=500,height=450');
+        });
+    })(jQuery);
+</script>
+
+            
+    
+
+        </footer>
+    </div>
+    
+        
+<nav id="article-nav">
+    
+        <a href="/2018/11/20/20/" id="article-nav-newer" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">上一篇</strong>
+            <div class="article-nav-title">
+                
+                    python multiprocessing 中imap和map的不同
+                
+            </div>
+        </a>
+    
+    
+        <a href="/2018/08/15/17/" id="article-nav-older" class="article-nav-link-wrap">
+            <strong class="article-nav-caption">下一篇</strong>
+            <div class="article-nav-title">RNN、LSTM、GRU、seq2seq简单理解</div>
+        </a>
+    
+</nav>
+
+
+    
+</article>
+
+
+    
+    
+
+</section>
+            
+                
+<aside id="sidebar">
+   
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">最新文章</h3>
+        <div class="widget">
+            <ul id="recent-post" class="">
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/11/20/20/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/11/20/20/" class="title">python multiprocessing 中imap和map的不同</a></p>
+                            <p class="item-date"><time datetime="2018-11-20T12:42:04.000Z" itemprop="datePublished">2018-11-20</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/10/15/19/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/10/15/19/" class="title">python GIL problem</a></p>
+                            <p class="item-date"><time datetime="2018-10-15T14:10:11.000Z" itemprop="datePublished">2018-10-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/15/17/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"></p>
+                            <p class="item-title"><a href="/2018/08/15/17/" class="title">RNN、LSTM、GRU、seq2seq简单理解</a></p>
+                            <p class="item-date"><time datetime="2018-08-15T07:23:00.000Z" itemprop="datePublished">2018-08-15</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/16/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/16/" class="title">python3中map函数的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T08:23:18.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+                    <li>
+                        
+                        <div class="item-thumbnail">
+                            <a href="/2018/08/14/15/" class="thumbnail">
+    
+    
+        <span class="thumbnail-image thumbnail-none"></span>
+    
+</a>
+
+                        </div>
+                        
+                        <div class="item-inner">
+                            <p class="item-category"><a class="article-category-link" href="/categories/python3笔记/">python3笔记</a></p>
+                            <p class="item-title"><a href="/2018/08/14/15/" class="title">python3中*星号操作符的使用</a></p>
+                            <p class="item-date"><time datetime="2018-08-14T07:47:19.000Z" itemprop="datePublished">2018-08-14</time></p>
+                        </div>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">分类</h3>
+        <div class="widget">
+            <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Coursera-Ng-笔记/">Coursera Ng 笔记</a><span class="category-list-count">15</span></li><li class="category-list-item"><a class="category-list-link" href="/categories/python3笔记/">python3笔记</a><span class="category-list-count">4</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">归档</h3>
+        <div class="widget">
+            <ul class="archive-list"><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/11/">十一月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/10/">十月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/08/">八月 2018</a><span class="archive-list-count">3</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/07/">七月 2018</a><span class="archive-list-count">1</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/06/">六月 2018</a><span class="archive-list-count">10</span></li><li class="archive-list-item"><a class="archive-list-link" href="/archives/2018/05/">五月 2018</a><span class="archive-list-count">5</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签</h3>
+        <div class="widget">
+            <ul class="tag-list"><li class="tag-list-item"><a class="tag-list-link" href="/tags/python3/">python3</a><span class="tag-list-count">4</span></li><li class="tag-list-item"><a class="tag-list-link" href="/tags/机器学习/">机器学习</a><span class="tag-list-count">17</span></li></ul>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap">
+        <h3 class="widget-title">标签云</h3>
+        <div class="widget tagcloud">
+            <a href="/tags/python3/" style="font-size: 10px;">python3</a> <a href="/tags/机器学习/" style="font-size: 20px;">机器学习</a>
+        </div>
+    </div>
+
+    
+        
+    <div class="widget-wrap widget-list">
+        <h3 class="widget-title">链接</h3>
+        <div class="widget">
+            <ul>
+                
+                    <li>
+                        <a href="https://miraachan.github.io/">Github</a>
+                    </li>
+                
+            </ul>
+        </div>
+    </div>
+
+
+    
+    <div id="toTop" class="fa fa-angle-up"></div>
+</aside>
+
+            
+        </div>
+        <footer id="footer">
+    <div class="outer">
+        <div id="footer-info" class="inner">
+            &copy; 2018 Mira Chan<br>
+            Powered by <a href="http://hexo.io/" target="_blank">Hexo</a>. Theme by <a href="http://github.com/ppoffice">PPOffice</a>
+        </div>
+    </div>
+</footer>
+        
+
+
+    
+        <script src="/libs/lightgallery/js/lightgallery.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-thumbnail.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-pager.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-autoplay.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-fullscreen.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-zoom.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-hash.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-share.min.js"></script>
+        <script src="/libs/lightgallery/js/lg-video.min.js"></script>
+    
+    
+        <script src="/libs/justified-gallery/jquery.justifiedGallery.min.js"></script>
+    
+    
+        <script type="text/x-mathjax-config">
+            MathJax.Hub.Config({ tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']] } });
+        </script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    
+
+
+
+<!-- Custom Scripts -->
+<script src="/js/main.js"></script>
+
+    </div><!-- hexo-inject:begin --><!-- Begin: Injected MathJax -->
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({"tex2jax":{"inlineMath":[["$","$"],["\\(","\\)"]],"skipTags":["script","noscript","style","textarea","pre","code"],"processEscapes":true},"TeX":{"equationNumbers":{"autoNumber":"AMS"}}});
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+    for(i=0; i < all.length; i += 1) {
+      all[i].SourceElement().parentNode.className += ' has-jax';
+    }
+  });
+</script>
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js">
+</script>
+<!-- End: Injected MathJax -->
+<!-- hexo-inject:end -->
+</body>
+</html>
